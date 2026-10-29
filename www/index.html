@@ -1,0 +1,816 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f3f5f4">
+</head>
+<body>
+<title>My BUSINESS Mentor</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: masthead with four tabs; each tab is a single working column with a side rail on wide screens; a floating "mentor is speaking" bar appears while audio plays. */
+:root {
+  --bg: #f3f5f4; --surface: #ffffff; --sunk: #e8ecea; --ink: #14213d; --muted: #586377; --line: #d5dcd9;
+  --accent: #17734a; --accent-ink: #ffffff; --accent-soft: #dcefe5; --gold: #b7861f; --gold-soft: #f6ecd4;
+  --bad: #b8392f; --bad-soft: #f8e2df; --info-soft: #e1e8f5;
+  --font-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Source Sans 3", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f1520; --surface: #161e2c; --sunk: #121926; --ink: #e8edf5; --muted: #9eabbf; --line: #283346;
+  --accent: #45c486; --accent-ink: #062014; --accent-soft: #143425; --gold: #e3b54f; --gold-soft: #2e2512;
+  --bad: #ff7d72; --bad-soft: #3a1b18; --info-soft: #1b2741; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0f1520; --surface: #161e2c; --sunk: #121926; --ink: #e8edf5; --muted: #9eabbf; --line: #283346;
+  --accent: #45c486; --accent-ink: #062014; --accent-soft: #143425; --gold: #e3b54f; --gold-soft: #2e2512;
+  --bad: #ff7d72; --bad-soft: #3a1b18; --info-soft: #1b2741; color-scheme: dark; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.55 var(--font-body); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+h1, h2, h3 { font-family: var(--font-display); margin: 0; text-wrap: balance; letter-spacing: -0.015em; }
+a { color: var(--accent); }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.wrap { max-width: 1100px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--surface); border-bottom: 1px solid var(--line); }
+.top .wrap { display: flex; align-items: center; gap: 14px; padding-block: 10px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand b { font: 800 20px/1 var(--font-display); letter-spacing: -0.01em; }
+.brand b span { color: var(--accent); letter-spacing: 0.04em; }
+.tabs { display: flex; gap: 4px; margin-left: auto; overflow-x: auto; scrollbar-width: none; }
+.tabs a { padding: 8px 14px; border-radius: 999px; text-decoration: none; color: var(--muted); font-weight: 700; white-space: nowrap; font-size: 15.5px; }
+.tabs a[aria-current="page"] { background: var(--ink); color: var(--bg); }
+
+main.wrap { padding-block: 22px 120px; display: grid; gap: 18px; }
+.hero { display: grid; gap: 6px; max-width: 64ch; }
+.hero h1 { font-size: clamp(26px, 4.4vw, 40px); line-height: 1.08; }
+.hero p { margin: 0; color: var(--muted); font-size: 18px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: grid; gap: 14px; min-width: 0; }
+.card h2 { font-size: 21px; }
+.card h3 { font-size: 17px; }
+.sub { margin: -8px 0 0; color: var(--muted); font-size: 15.5px; }
+.grid2 { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--surface); font-weight: 700; cursor: pointer; color: var(--ink); text-decoration: none; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.gold { background: var(--gold); border-color: var(--gold); color: #1d1404; }
+.btn.small { min-height: 34px; padding: 0 12px; font-size: 14.5px; border-radius: 10px; }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+.mic { width: 60px; height: 60px; border-radius: 50%; padding: 0; background: var(--accent); border-color: var(--accent); color: var(--accent-ink); flex: none; }
+.mic.on { background: var(--bad); border-color: var(--bad); color: #fff; animation: pulse 1.2s infinite; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--bad) 55%, transparent); } 100% { box-shadow: 0 0 0 16px transparent; } }
+textarea, input, select { width: 100%; min-height: 44px; padding: 10px 12px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--bg); }
+textarea { resize: vertical; min-height: 120px; line-height: 1.5; }
+textarea:focus, input:focus, select:focus { outline: none; border-color: var(--accent); }
+label.fl { font-weight: 700; font-size: 15px; display: block; margin-bottom: 6px; }
+.hint { color: var(--muted); font-size: 14.5px; margin: 0; }
+.speakrow { display: flex; gap: 12px; align-items: flex-start; }
+.speakrow > div { flex: 1; min-width: 0; }
+.note { border-radius: 12px; padding: 12px 14px; font-size: 15.5px; border: 1.5px solid; }
+.note.info { background: var(--info-soft); border-color: color-mix(in srgb, var(--ink) 25%, transparent); }
+.note.ok { background: var(--accent-soft); border-color: var(--accent); }
+.note.warn { background: var(--gold-soft); border-color: var(--gold); }
+.note.bad { background: var(--bad-soft); border-color: var(--bad); }
+
+.ideas { display: grid; gap: 8px; }
+.idea { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: start; padding: 10px 12px; border-radius: 12px; background: var(--sunk); border: 1px solid var(--line); }
+.idea .tag { font: 500 11.5px var(--font-mono); padding: 2px 7px; border-radius: 6px; background: var(--surface); border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+.idea p { margin: 0; overflow-wrap: anywhere; }
+.canvas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.box { border: 1.5px solid var(--line); border-radius: 12px; padding: 10px 12px; background: var(--bg); min-width: 0; }
+.box h3 { font: 700 12.5px var(--font-mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); margin-bottom: 4px; }
+.box div[contenteditable] { min-height: 48px; outline: none; font-size: 15.5px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.box div[contenteditable]:empty::before { content: attr(data-ph); color: var(--muted); }
+.statement { font: 600 clamp(18px, 2.4vw, 22px)/1.35 var(--font-display); padding: 14px 16px; border-left: 5px solid var(--gold); background: var(--gold-soft); border-radius: 0 12px 12px 0; }
+
+/* questions */
+.qnav { display: flex; gap: 6px; flex-wrap: wrap; }
+.qnav button { width: 38px; height: 38px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--surface); font: 600 14px var(--font-mono); cursor: pointer; }
+.qnav button.ans { background: var(--accent-soft); border-color: var(--accent); }
+.qnav button.cur { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.qnum { font: 600 13px var(--font-mono); color: var(--gold); letter-spacing: 0.08em; text-transform: uppercase; }
+.qtext { font: 800 clamp(22px, 3.4vw, 30px)/1.15 var(--font-display); }
+.why { color: var(--muted); font-size: 16px; margin: 0; }
+.score { display: flex; gap: 4px; }
+.score i { width: 26px; height: 8px; border-radius: 4px; background: var(--sunk); border: 1px solid var(--line); }
+.score i.on { background: var(--accent); border-color: var(--accent); }
+.fb { display: grid; gap: 10px; }
+.fb ul { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+.story { border-radius: 14px; padding: 14px 16px; background: var(--ink); color: var(--bg); display: grid; gap: 6px; }
+.story .k { font: 600 11.5px var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); }
+.story h3 { font-size: 19px; color: var(--bg); }
+.story p { margin: 0; opacity: .92; }
+.story .btn { background: transparent; color: var(--bg); border-color: color-mix(in srgb, var(--bg) 35%, transparent); justify-self: start; }
+.meter { height: 10px; border-radius: 6px; background: var(--sunk); border: 1px solid var(--line); overflow: hidden; }
+.meter b { display: block; height: 100%; background: var(--accent); }
+
+/* local */
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; counter-reset: s; }
+.steps li { counter-increment: s; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 12px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); }
+.steps li::before { content: counter(s); grid-row: span 2; width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); font: 700 14px var(--font-mono); }
+.steps b { font-size: 16.5px; }
+.steps span { color: var(--muted); font-size: 15px; }
+.facts { width: 100%; border-collapse: collapse; font-size: 15px; }
+.facts td, .facts th { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.facts th { font: 600 12.5px var(--font-mono); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.tablewrap { overflow-x: auto; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { padding: 4px 10px; border-radius: 999px; background: var(--sunk); border: 1px solid var(--line); font-size: 14px; }
+
+/* learn */
+.lgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+.litem { display: grid; gap: 2px; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--bg); text-decoration: none; color: var(--ink); }
+.litem:hover { border-color: var(--accent); }
+.litem b { font-family: var(--font-display); font-size: 16.5px; }
+.litem span { font-size: 14px; color: var(--muted); }
+.litem em { font-style: normal; font-size: 13.5px; color: var(--accent); }
+
+/* speaking bar */
+.speaking { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 8; display: flex; gap: 12px; align-items: center; padding: 10px 12px 10px 16px; border-radius: 999px; background: var(--ink); color: var(--bg); box-shadow: 0 10px 30px -10px rgba(0,0,0,.45); max-width: calc(100vw - 32px); }
+.speaking .btn { background: var(--bg); color: var(--ink); border: 0; min-height: 34px; }
+.bars { display: flex; gap: 3px; align-items: flex-end; height: 18px; }
+.bars i { width: 4px; background: var(--gold); border-radius: 2px; animation: eq 0.9s infinite ease-in-out; }
+.bars i:nth-child(2) { animation-delay: .15s; } .bars i:nth-child(3) { animation-delay: .3s; } .bars i:nth-child(4) { animation-delay: .45s; }
+@keyframes eq { 0%, 100% { height: 4px; } 50% { height: 18px; } }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(76px + env(safe-area-inset-bottom, 0px)); background: var(--accent); color: var(--accent-ink); padding: 10px 16px; border-radius: 10px; font-weight: 700; z-index: 9; max-width: calc(100vw - 32px); }
+dialog { border: 1px solid var(--line); border-radius: 16px; background: var(--surface); color: var(--ink); width: min(520px, calc(100vw - 32px)); padding: 0; }
+dialog::backdrop { background: rgba(5, 10, 20, .6); }
+dialog form { padding: 18px 20px; display: grid; gap: 14px; }
+.seg { display: flex; gap: 6px; }
+.seg label { flex: 1; }
+.seg input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.seg span { display: block; text-align: center; padding: 10px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--bg); font-weight: 700; cursor: pointer; }
+.seg input:checked + span { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.seg input:focus-visible + span { outline: 3px solid var(--gold); }
+.thinking { display: flex; gap: 10px; align-items: center; color: var(--muted); font-size: 15.5px; }
+.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); animation: blink 1s infinite; }
+.dot:nth-child(2) { animation-delay: .2s; } .dot:nth-child(3) { animation-delay: .4s; }
+@keyframes blink { 50% { opacity: .2; } }
+
+@media (max-width: 820px) { .grid2 { grid-template-columns: 1fr; } .canvas { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 520px) { .canvas { grid-template-columns: 1fr; } .tabs { width: 100%; margin-left: 0; } .tabs a { padding: 8px 11px; font-size: 14.5px; } .mic { width: 52px; height: 52px; } }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+</style>
+
+<header class="top"><div class="wrap">
+  <div class="brand"><svg width="30" height="30" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="var(--accent)"/><path d="M10 28V14l10 8 10-8v14" fill="none" stroke="var(--accent-ink)" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round"/><circle cx="31" cy="10" r="3.5" fill="var(--gold)"/></svg><b>my <span>BUSINESS</span> mentor</b></div>
+  <nav class="tabs" aria-label="Sections">
+    <a href="#ideas" data-tab="ideas">Brainstorm</a><a href="#questions" data-tab="questions">20 Questions</a><a href="#local" data-tab="local">Start locally</a><a href="#learn" data-tab="learn">Learn</a><a href="#voice" data-tab="voice" aria-label="Voice and AI settings">Settings</a>
+  </nav>
+</div></header>
+
+<main class="wrap">
+<!-- ============ BRAINSTORM ============ -->
+<section id="v-ideas" data-view="ideas" style="display:grid;gap:18px">
+  <div class="hero"><h1>Say it out loud. Leave with a plan.</h1><p>Talk or type every thought about your business idea. Your mentor sorts them and shapes them into a concept you can test this month.</p></div>
+  <div class="grid2">
+    <section class="card" aria-labelledby="dumpT">
+      <h2 id="dumpT">Your thoughts</h2>
+      <div class="speakrow">
+        <button class="btn mic" id="micIdea" type="button" aria-label="Start speaking" title="Speak"><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg></button>
+        <div><label class="fl" for="ideaIn">Speak or type one thought, then add it</label>
+          <textarea id="ideaIn" rows="4" placeholder="For example: People in my area wait 40 minutes for lunch. I could sell healthy pre-ordered lunch boxes to office workers in Warrens."></textarea>
+          <p class="hint" id="micHintIdea"></p></div>
+      </div>
+      <div class="row"><button class="btn primary" id="addIdea" type="button">Add thought</button><button class="btn small" id="clearIdeas" type="button">Start over</button></div>
+      <div class="ideas" id="ideaList"></div>
+    </section>
+    <section class="card" aria-labelledby="shapeT">
+      <h2 id="shapeT">Shape it into a concept</h2>
+      <p class="sub">Once you have three or more thoughts, your mentor turns them into a one-line concept, a business canvas and five next steps.</p>
+      <button class="btn gold" id="shapeBtn" type="button">Shape my idea</button>
+      <div id="shapeStatus"></div>
+    </section>
+  </div>
+  <section class="card" id="conceptCard" aria-labelledby="conceptT">
+    <div class="row" style="justify-content:space-between"><h2 id="conceptT">Your concept</h2><div class="row"><button class="btn small" id="listenConcept" type="button">Listen</button><button class="btn small" id="savePack" type="button">Save business pack</button></div></div>
+    <div class="statement" id="statement" contenteditable="true" spellcheck="true"></div>
+    <div class="canvas" id="canvas"></div>
+    <div><h3 style="margin-bottom:6px">Next five steps</h3><ol id="nextSteps" style="margin:0;padding-left:22px;display:grid;gap:4px"></ol></div>
+    <p class="hint">Every box is editable. Tap and type to change it.</p>
+  </section>
+</section>
+
+<!-- ============ QUESTIONS ============ -->
+<section id="v-questions" data-view="questions" style="display:grid;gap:18px" hidden>
+  <div class="hero"><h1>20 hard questions</h1><p>The questions bankers, investors and real customers will ask you. Answer by voice or typing. Your mentor scores each answer, tells you what is missing, and shares a true story from someone who faced the same question.</p></div>
+  <div class="card" style="gap:10px"><div class="row" style="justify-content:space-between"><b>Readiness</b><span id="readyTxt" class="hint"></span></div><div class="meter"><b id="readyBar" style="width:0"></b></div><div class="qnav" id="qnav" role="tablist" aria-label="Questions"></div></div>
+  <section class="card" id="qcard" aria-live="polite"></section>
+</section>
+
+<!-- ============ LOCAL ============ -->
+<section id="v-local" data-view="local" style="display:grid;gap:18px" hidden>
+  <div class="hero"><h1>Start it where you live</h1><p>The registration steps, documents and regulators for your country. Your location is found from your internet connection; you can change it.</p></div>
+  <section class="card"><div class="cols"><label class="fl" for="countrySel">Country</label><select id="countrySel"></select><p class="hint" id="locHint" style="margin-top:6px"></p></div></section>
+  <div id="localOut" style="display:grid;gap:18px"></div>
+</section>
+
+<!-- ============ LEARN ============ -->
+<section id="v-learn" data-view="learn" style="display:grid;gap:18px" hidden>
+  <div class="hero"><h1>Keep learning</h1><p>Books, videos and magazines that working founders recommend again and again.</p></div>
+  <div id="learnOut" style="display:grid;gap:18px"></div>
+</section>
+
+<!-- ============ SETTINGS ============ -->
+<section id="v-voice" data-view="voice" style="display:grid;gap:18px" hidden>
+  <div class="hero"><h1>Voice and mentor settings</h1><p>Choose how your mentor sounds and which free AI does the thinking.</p></div>
+  <section class="card">
+    <h2>Mentor's voice</h2>
+    <div class="seg" role="radiogroup" aria-label="Voice"><label><input type="radio" name="gender" value="female" checked><span>Female voice</span></label><label><input type="radio" name="gender" value="male"><span>Male voice</span></label><label><input type="radio" name="gender" value="off"><span>Text only</span></label></div>
+    <div><label class="fl" for="voiceSel">Exact voice</label><select id="voiceSel"></select><p class="hint" id="voiceHint" style="margin-top:6px"></p></div>
+    <div><label class="fl" for="rateIn">Speed <span id="rateEcho" class="hint"></span></label><input id="rateIn" type="range" min="0.7" max="1.4" step="0.05" value="1" style="padding:0;min-height:30px"></div>
+    <div class="row"><button class="btn" id="testVoice" type="button">Test the voice</button></div>
+  </section>
+  <section class="card">
+    <h2>Mentor's brain</h2>
+    <p class="sub">All options are free to use.</p>
+    <div class="seg" role="radiogroup" aria-label="AI"><label><input type="radio" name="ai" value="auto" checked><span>Automatic</span></label><label><input type="radio" name="ai" value="builtin"><span>Built-in coach</span></label><label><input type="radio" name="ai" value="ollama"><span>Ollama</span></label></div>
+    <div id="aiInfo"></div>
+    <div id="ollamaBox" hidden><label class="fl" for="ollamaUrl">Ollama address and model</label><div class="row" style="flex-wrap:nowrap"><input id="ollamaUrl" value="http://localhost:11434" spellcheck="false"><input id="ollamaModel" value="llama3.2" spellcheck="false" style="max-width:160px"></div><p class="hint" style="margin-top:6px">Ollama is a free program that runs open AI models on your own computer. Install it from ollama.com, then run <span style="font-family:var(--font-mono)">ollama pull llama3.2</span>.</p></div>
+  </section>
+  <section class="card"><h2>Your data</h2><p class="hint">Your thoughts and answers stay on this device. Nothing is uploaded except the text you send to the mentor's brain when you ask it to think.</p><div class="row"><button class="btn small" id="wipe" type="button">Erase everything</button></div></section>
+</section>
+</main>
+
+<div class="speaking" id="speaking" hidden><span class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span id="speakingTxt">Mentor is speaking</span><button class="btn small" id="stopSpeak" type="button">Stop</button></div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script src="native-shim.js"></script>
+<script>
+(function () {
+  'use strict';
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem('mbm.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem('mbm.' + k, JSON.stringify(v)); } catch (e) { /* storage blocked */ } },
+  };
+  function toast(m) { const t = $('toast'); t.textContent = m; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => { t.hidden = true; }, 2400); }
+
+  /* =================================================================
+     CONTENT: 20 hard questions, true stories, country guides, learning
+     ================================================================= */
+  const Q = [
+    { t: 'problem', q: 'What painful problem do you solve, and how do you know real people have it?', why: 'Most new businesses fail because nobody needed what they built. Evidence beats belief.', want: ['talked', 'asked', 'interview', 'survey', 'customers said', 'complain', 'waste', 'spend', 'hours', 'cost'], need: 'evidence' },
+    { t: 'customer', q: 'Who exactly is your first customer? Describe one real person.', why: '"Everyone" is not a customer. A specific person tells you where to find the next hundred.', want: ['age', 'works', 'lives', 'owner', 'mother', 'student', 'manager', 'small business'], need: 'specific' },
+    { t: 'pay', q: 'Has anyone paid, pre-ordered or signed up to pay? How much?', why: 'Compliments are free. Money, even a small deposit, is the only proof of demand.', want: ['paid', 'deposit', 'pre-order', 'preorder', 'signed', 'sold', 'invoice'], need: 'money' },
+    { t: 'competition', q: 'What do people use today instead of you, and why would they switch?', why: 'There is always competition, even if it is "doing nothing" or a spreadsheet.', want: ['instead', 'currently', 'alternative', 'competitor', 'switch', 'cheaper', 'faster', 'better'], need: 'alternatives' },
+    { t: 'advantage', q: 'Why you? What can you do that others cannot easily copy?', why: 'If a bigger company can copy you in a weekend, they will.', want: ['experience', 'years', 'relationship', 'patent', 'recipe', 'license', 'access', 'network', 'skill'], need: 'moat' },
+    { t: 'unit', q: 'For one sale: what is the price, what does it cost you, and what is left?', why: 'Selling more of something that loses money only loses money faster.', want: ['price', 'cost', 'margin', 'profit', 'per unit', 'each'], need: 'numbers' },
+    { t: 'startup', q: 'How much money do you need to open, and how many months can you last with no sales?', why: 'Runway is time. Knowing it stops panic decisions.', want: ['months', 'savings', 'rent', 'equipment', 'budget', 'runway'], need: 'numbers' },
+    { t: 'funding', q: 'Where will the money come from, and what will you give up to get it?', why: 'Loans cost interest and stress; investors take ownership and control. Both have a price.', want: ['loan', 'savings', 'investor', 'grant', 'family', 'bank', 'equity', 'interest', 'credit union'], need: 'source' },
+    { t: 'pricing', q: 'How did you set your price, and what happens if you raise it by 20%?', why: 'Pricing is the fastest lever on profit and the one beginners set by guesswork.', want: ['competitor', 'value', 'cost plus', 'margin', 'tested', 'willing to pay'], need: 'reasoning' },
+    { t: 'channels', q: 'How will your first 100 customers find you, and what will each one cost to win?', why: '"Social media" is not a plan. A channel with a cost per customer is.', want: ['instagram', 'whatsapp', 'referral', 'flyer', 'partner', 'ads', 'word of mouth', 'per customer', 'tiktok', 'facebook', 'market'], need: 'channel+cost' },
+    { t: 'mvp', q: 'What is the smallest version you could sell within 30 days?', why: 'The sooner you sell, the sooner you learn what customers really want.', want: ['days', 'weeks', 'simple', 'test', 'pilot', 'prototype', 'sample'], need: 'small' },
+    { t: 'metric', q: 'What number in 90 days tells you to keep going, change course, or stop?', why: 'Without a finish line, hope keeps failing businesses alive for years.', want: ['customers', 'sales', 'revenue', 'per week', 'per month', 'repeat', 'target'], need: 'target' },
+    { t: 'risks', q: 'Name three things that could kill this business, and your plan for each.', why: 'You cannot avoid every risk, but you can decide your response before it happens.', want: ['risk', 'if', 'backup', 'insurance', 'plan b', 'supplier', 'competitor', 'weather', 'hurricane'], need: 'three' },
+    { t: 'legal', q: 'What licences, permits, insurance, tax registrations or trademarks apply to you?', why: 'Fines, closures and lost brand names are expensive surprises.', want: ['licence', 'license', 'permit', 'register', 'insurance', 'tax', 'vat', 'trademark', 'health', 'nis'], need: 'list' },
+    { t: 'suppliers', q: 'Who supplies you, and what happens if they fail, raise prices or run out?', why: 'One supplier is a single point of failure, especially on an island.', want: ['supplier', 'second', 'backup', 'import', 'stock', 'local', 'contract'], need: 'backup' },
+    { t: 'team', q: 'Who is on your team, what skill is missing, and how will you fill it?', why: 'Nobody is good at everything. Investors back teams that know their gaps.', want: ['partner', 'accountant', 'hire', 'freelance', 'mentor', 'skill', 'co-founder'], need: 'gap' },
+    { t: 'time', q: 'How many hours a week can you really give this, and what will you give up?', why: 'Every business is paid for in time before it pays you in money.', want: ['hours', 'week', 'job', 'family', 'weekend', 'evenings', 'give up'], need: 'numbers' },
+    { t: 'failure', q: 'Imagine it failed a year from now. What was the most likely reason?', why: 'A "pre-mortem" finds the weak spot while you can still fix it.', want: ['because', 'cash', 'customers', 'competition', 'quit', 'burnout', 'price'], need: 'honest' },
+    { t: 'scale', q: 'What breaks first if you get ten times more customers?', why: 'Growth exposes every shortcut: delivery, staff, cash flow, quality.', want: ['staff', 'delivery', 'cash', 'quality', 'system', 'space', 'automate', 'hire'], need: 'bottleneck' },
+    { t: 'why', q: 'Why do you want to do this, and what does success look like in five years?', why: 'Your reason is what keeps you going in the hard months. Make it concrete.', want: ['because', 'family', 'freedom', 'community', 'years', 'income', 'employ', 'build'], need: 'vision' },
+  ];
+
+  /* True, well-documented stories. Each tagged with the question themes it illustrates. */
+  const STORIES = [
+    { k: 'Rags to riches', h: 'Sara Blakely and Spanx', tags: ['startup', 'legal', 'mvp'], s: 'Sara Blakely sold fax machines door to door. She started Spanx with 5,000 dollars of her own savings, wrote much of her own patent application to save legal fees, and pitched stores herself. In 2012 Forbes called her the youngest self-made woman billionaire. Start small, own your idea, and protect it.' },
+    { k: 'Successful failure', h: 'James Dyson’s 5,127 prototypes', tags: ['advantage', 'mvp', 'time'], s: 'James Dyson built 5,127 prototypes over about five years before his bagless vacuum worked. Big manufacturers refused to license it, so he launched it first in Japan and later built his own company. His edge was years of learning that nobody could copy overnight.' },
+    { k: 'Rags to riches', h: 'Howard Schultz and Starbucks', tags: ['why', 'funding', 'time'], s: 'Howard Schultz grew up in public housing in Brooklyn. He left Starbucks to start his own coffee bar, Il Giornale, then raised money to buy Starbucks in 1987. Reportedly most of the investors he approached turned him down. Conviction about why you are doing it carries you through the no’s.' },
+    { k: 'Rags to riches', h: 'Jan Koum and WhatsApp', tags: ['why', 'channels', 'customer'], s: 'Jan Koum moved from Ukraine to California at sixteen and his family relied on food stamps. He co-founded WhatsApp in 2009. It grew mostly by word of mouth with almost no advertising, and Facebook bought it for 19 billion dollars in 2014. A product people love becomes its own marketing.' },
+    { k: 'Successful failure', h: 'Airbnb’s cereal boxes', tags: ['pay', 'funding', 'startup'], s: 'In 2008 the Airbnb founders were broke and investors were not interested. They designed election-themed cereal, Obama O’s and Cap’n McCain’s, and sold boxes to keep the company alive. That scrappiness helped get them into Y Combinator. When money is short, find a way to sell something now.' },
+    { k: 'Successful failure', h: 'Walt Disney loses Oswald', tags: ['legal', 'risks', 'failure'], s: 'Walt Disney’s first studio, Laugh-O-Gram, went bankrupt in 1923. Later his distributor took the rights to his hit character, Oswald the Lucky Rabbit, along with most of his animators. Disney created Mickey Mouse and made sure he owned every character after that. Read your contracts and own your intellectual property.' },
+    { k: 'Successful failure', h: 'Henry Ford’s first two companies', tags: ['team', 'funding', 'failure'], s: 'Henry Ford’s Detroit Automobile Company closed in 1901, and he left the next company after disagreements with its backers. His third try, Ford Motor Company in 1903, worked. Choosing partners and investors who share your plan matters as much as the product.' },
+    { k: 'Successful failure', h: 'Milton Hershey tries again', tags: ['failure', 'suppliers', 'time'], s: 'Milton Hershey’s early candy shops in Philadelphia and New York failed. His Lancaster Caramel Company succeeded, and he sold it in 1900 for one million dollars to focus on chocolate. Failure taught him the trade; persistence and better cost control did the rest.' },
+    { k: 'Late start', h: 'Colonel Sanders at sixty-two', tags: ['channels', 'time', 'risks'], s: 'When a new highway bypassed Harland Sanders’ restaurant in Corbin, Kentucky, his business collapsed. In his sixties he travelled from restaurant to restaurant selling the right to use his chicken recipe, building Kentucky Fried Chicken through franchising. He sold the company in 1964 for two million dollars. One outside change can wipe out a single location, so plan for it.' },
+    { k: 'Cautionary tale', h: 'Webvan grows too fast', tags: ['scale', 'unit', 'failure'], s: 'Webvan raised hundreds of millions of dollars to deliver groceries ordered online and built huge warehouses before it had enough customers to fill them. It went bankrupt in 2001. Prove that each order makes money before you build for millions of orders.' },
+    { k: 'Cautionary tale', h: 'Quibi’s 1.75 billion dollars', tags: ['funding', 'problem', 'metric'], s: 'Quibi raised about 1.75 billion dollars to make short shows for phones, launched in 2020, and shut down about six months later. Money cannot replace proof that people want what you are making. Test small before you spend big.' },
+    { k: 'Cautionary tale', h: 'Juicero’s squeezable packs', tags: ['problem', 'pricing', 'advantage'], s: 'Juicero sold a Wi-Fi juice press that launched at 699 dollars. Reporters showed its juice packs could be squeezed by hand just as well, and the company closed in 2017. Make sure your solution is truly better than the simple alternative.' },
+    { k: 'Cautionary tale', h: 'Blockbuster says no to Netflix', tags: ['competition', 'risks', 'scale'], s: 'In 2000 Blockbuster turned down the chance to buy Netflix for about 50 million dollars. Ten years later Blockbuster filed for bankruptcy while Netflix kept growing. Watch the small competitor solving the problem in a new way.' },
+    { k: 'Cautionary tale', h: 'Kodak invents the digital camera', tags: ['competition', 'advantage', 'why'], s: 'A Kodak engineer, Steven Sasson, built the first digital camera in 1975. Kodak protected its film business instead of leading the change, and filed for bankruptcy in 2012. Being first is not enough if you are afraid to replace yourself.' },
+    { k: 'Cautionary tale', h: 'Pets.com and the shipping bill', tags: ['unit', 'pricing', 'channels'], s: 'Pets.com spent heavily on advertising and sold heavy bags of pet food online, often for less than the cost of buying and shipping them. It closed in 2000, less than a year after going public. Know your cost per sale, including delivery.' },
+    { k: 'Pivot', h: 'Instagram started as Burbn', tags: ['mvp', 'metric', 'customer'], s: 'Instagram began as Burbn, a cluttered check-in app. The founders noticed people only really used the photo sharing, cut everything else, and relaunched. Facebook bought Instagram for one billion dollars in 2012. Watch what customers actually do and keep that.' },
+    { k: 'Pivot', h: 'Slack came out of a failed game', tags: ['metric', 'failure', 'team'], s: 'Stewart Butterfield’s team built an online game called Glitch that did not take off. The chat tool they had made for themselves was the valuable part, and it became Slack in 2014. A failure often contains your next business.' },
+    { k: 'Spot the gap', h: 'Rihanna’s Fenty Beauty', tags: ['problem', 'customer', 'competition'], s: 'Born in Saint Michael, Barbados, Rihanna launched Fenty Beauty in 2017 with 40 foundation shades, serving women whose skin tones big brands had overlooked. It was an instant hit, and Forbes later named her a billionaire, largely because of it. The best gaps are customers everyone else ignores.' },
+    { k: 'Persistence', h: 'Canva and the investor no’s', tags: ['funding', 'why', 'time'], s: 'Melanie Perkins started with a yearbook design business in Perth, Australia. Investors rejected her design software idea many times, reportedly over a hundred, before she raised money for Canva, now used by millions. Rejection is information, not a verdict.' },
+    { k: 'Caribbean success', h: 'Butch Stewart builds Sandals', tags: ['advantage', 'suppliers', 'why'], s: 'Jamaican entrepreneur Gordon "Butch" Stewart first built Appliance Traders, selling air conditioners. In 1981 he bought a run-down hotel in Montego Bay and turned it into the first Sandals resort, growing it into one of the Caribbean’s best-known hotel groups. Skills from one business can power the next.' },
+    { k: 'Cautionary tale', h: 'Theranos fakes it', tags: ['legal', 'risks', 'team'], s: 'Theranos claimed it could run many blood tests from a finger prick. The technology did not work as promised, and founder Elizabeth Holmes was convicted of fraud in 2022. "Fake it till you make it" stops at the truth. Never promise customers or investors what you cannot deliver.' },
+    { k: 'Lesson in pricing', h: 'Netflix’s Qwikster mistake', tags: ['pricing', 'customer', 'risks'], s: 'In 2011 Netflix split its DVD and streaming plans, raising the price for many members, and announced a separate brand called Qwikster. Customers were angry and Netflix lost about 800,000 subscribers in one quarter before it dropped the plan. Change prices carefully and explain why.' },
+    { k: 'Rags to riches', h: 'Oprah Winfrey owns her work', tags: ['why', 'advantage', 'legal'], s: 'Oprah Winfrey was born into poverty in rural Mississippi. She took ownership of her talk show through her own company, Harpo Productions, rather than staying an employee, and became one of the world’s best-known self-made billionaires. Owning what you create changes what you earn.' },
+  ];
+  const storyFor = (theme, skip = []) => {
+    const pool = STORIES.filter((s) => s.tags.includes(theme) && !skip.includes(s.h));
+    return pool.length ? pool[Math.floor(Math.random() * pool.length)] : STORIES[Math.floor(Math.random() * STORIES.length)];
+  };
+
+  /* Country guides: facts verified October 2026; always confirm with the agency before filing. */
+  const GUIDES = {
+    BB: {
+      name: 'Barbados', checked: 'October 2026',
+      steps: [
+        ['Choose your structure', 'Sole trader or partnership under a registered business name, or a company (Regular Business Company) for limited liability. A business name does not protect your personal assets; a company does.'],
+        ['Register the name or company with Business Barbados', 'Business names: Form 1, filing fee BDS$104, within 14 days of starting. Can be filed online. Companies: incorporation documents and fees (about US$400), at least one director. Business Barbados was formerly called CAIPO.'],
+        ['Register for tax with the Barbados Revenue Authority (BRA)', 'Get your TIN through the BRA TAMIS portal. Corporation tax is 9% for most companies (since January 2024); businesses registered under the Small Business Development Act with revenue up to BDS$2 million are treated differently.'],
+        ['Register for VAT when you reach the threshold', 'VAT is 17.5%. Registration is required once taxable sales pass BDS$350,000 a year (raised from BDS$200,000 on 1 October 2026). You may register voluntarily below it.'],
+        ['Register with the National Insurance Scheme (NIS)', 'Every employer registers and gets an employer number. Employer contributions are 12.75% of insurable earnings (capped at BDS$5,360 a month), due by the 15th of the next month. Self-employed people also register.'],
+        ['Get premises approvals and licences', 'Change of use or new building: Planning and Development Department. Food, beauty and similar trades: check health requirements with the Ministry of Health and Wellness (Environmental Health). Some sectors (finance, insurance, tourism) have their own regulators.'],
+        ['Register as a small business (optional, worth it)', 'Registration under the Small Business Development Act can bring tax concessions. Ask Business Barbados or the Small Business Association about eligibility.'],
+        ['Protect your brand and your customers’ data', 'Register trademarks with Business Barbados. If you collect customer information, follow the Data Protection Act 2019.'],
+      ],
+      docs: ['National ID or passport for each owner and director', 'Proof of business address', 'Business name certificate or certificate of incorporation', 'Articles of incorporation and register of directors (companies)', 'TIN from the BRA', 'NIS employer number', 'Planning permission or lease for your premises', 'Sector licences and health certificates where required', 'Business bank account opening documents', 'Insurance policies (public liability, property, employer)'],
+      agencies: [['Business Barbados (formerly CAIPO)', 'https://caipo.gov.bb/', 'Business names, companies, trademarks'], ['Barbados Revenue Authority', 'https://bra.gov.bb/', 'Tax registration, corporation tax, VAT'], ['National Insurance and Social Security Service', 'https://www.nis.gov.bb/', 'Employer and self-employed registration'], ['Invest Barbados', 'https://www.investbarbados.org/', 'Guidance for new and foreign investors']],
+      sources: [['Business Barbados: business name registration', 'https://caipo.gov.bb/corporate-affairs/business-name-registration/'], ['Invest Barbados: setting up a business', 'https://www.investbarbados.org/?p=2428'], ['PwC tax summaries: Barbados other taxes (reviewed 9 Oct 2026)', 'https://taxsummaries.pwc.com/barbados/corporate/other-taxes'], ['NIS: registration', 'https://www.nis.gov.bb/registration/']],
+    },
+    JM: {
+      name: 'Jamaica', checked: 'October 2026',
+      steps: [['Get a Taxpayer Registration Number (TRN)', 'Every owner needs a TRN from Tax Administration Jamaica.'], ['Register your business name or company', 'Business names use Form BRF 1 at the Companies Office of Jamaica (fee J$2,500 for a sole trader); registration lasts three years and must be renewed. Companies incorporate with the Companies Office, which also links statutory registrations.'], ['Register as an employer', 'NIS, NHT, HEART/NSTA Trust and Education Tax registrations apply once you employ people.'], ['Check GCT and sector licences', 'Register for General Consumption Tax when your sales reach the threshold. Food, transport, tourism and other sectors need their own licences.']],
+      docs: ['TRN for each owner', 'Government-issued ID', 'Proof of business address', 'BRF 1 form or incorporation documents'],
+      agencies: [['Companies Office of Jamaica', 'https://www.orcjamaica.com/', 'Business names and companies'], ['Tax Administration Jamaica', 'https://www.jamaicatax.gov.jm/', 'TRN, GCT, income tax'], ['Ministry of Industry, Investment and Commerce', 'https://www.miic.gov.jm/registration-business-jamaica/', 'Registration guidance']],
+      sources: [['MIIC: registration of a business in Jamaica', 'https://www.miic.gov.jm/registration-business-jamaica/']],
+    },
+    TT: {
+      name: 'Trinidad and Tobago', checked: 'October 2026',
+      steps: [['Register your business name or company', 'Use the Companies Registry, which offers online filing through TTBizLink.'], ['Get a Board of Inland Revenue file number', 'Register online through the Inland Revenue Division e-tax portal.'], ['Register with the National Insurance Board', 'Required once you employ people.'], ['Register for VAT at the threshold', 'Registration is required when sales reach TT$500,000 in 12 months (or you expect them to). There is no fee; applicants attend an interview at the Inland Revenue Division.']],
+      docs: ['National ID or passport', 'Business name certificate or incorporation documents', 'BIR file number', '12-month projected income statement (for VAT)'],
+      agencies: [['TTBizLink', 'https://www.ttbizlink.gov.tt/', 'Online company and trade services'], ['Inland Revenue Division e-tax', 'https://etax.ird.gov.tt/', 'BIR file number'], ['Ministry of Finance: registering for VAT', 'https://www.finance.gov.tt/services/income-tax/registering-for-vat/', 'VAT rules and forms']],
+      sources: [['Ministry of Finance: registering for VAT', 'https://www.finance.gov.tt/services/income-tax/registering-for-vat/']],
+    },
+    US: {
+      name: 'United States', checked: 'October 2026',
+      steps: [['Choose a structure', 'Sole proprietorship, partnership, LLC or corporation. An LLC or corporation separates your personal assets from the business.'], ['Register with your state', 'File formation documents with your state’s Secretary of State (or equivalent), and register a "doing business as" name if you use one.'], ['Get an Employer Identification Number (EIN)', 'Free from the IRS online. Needed for employees, partnerships and most bank accounts.'], ['Register for state and local taxes', 'Sales tax permits and state employer accounts depend on your state.'], ['Get licences and permits', 'Federal licences apply to some industries; most licences are state, county or city.']],
+      docs: ['Formation documents', 'EIN confirmation letter', 'State tax registrations', 'Business licences and permits', 'Operating agreement or bylaws'],
+      agencies: [['U.S. Small Business Administration: launch your business', 'https://www.sba.gov/business-guide/launch-your-business', 'Step-by-step federal guide'], ['IRS: apply for an EIN', 'https://www.irs.gov/businesses/small-businesses-self-employed/apply-for-an-employer-identification-number-ein-online', 'Free EIN']],
+      sources: [['SBA business guide', 'https://www.sba.gov/business-guide/launch-your-business']],
+    },
+    GB: {
+      name: 'United Kingdom', checked: 'October 2026',
+      steps: [['Choose a structure', 'Sole trader, partnership or limited company.'], ['Register', 'Sole traders register for Self Assessment with HMRC. Limited companies register with Companies House.'], ['Register for VAT at the threshold', 'Required when taxable turnover passes £90,000 in 12 months.'], ['Employer registration', 'Register as an employer with HMRC (PAYE) before your first payday.'], ['Licences and insurance', 'Check licences for your trade and get employers’ liability insurance if you employ staff.']],
+      docs: ['Unique Taxpayer Reference (UTR)', 'Company registration number', 'VAT number when registered', 'PAYE reference'],
+      agencies: [['GOV.UK: set up a business', 'https://www.gov.uk/set-up-business', 'Official step-by-step'], ['Companies House', 'https://www.gov.uk/government/organisations/companies-house', 'Company registration']],
+      sources: [['GOV.UK: set up a business', 'https://www.gov.uk/set-up-business']],
+    },
+    CA: {
+      name: 'Canada', checked: 'October 2026',
+      steps: [['Choose a structure', 'Sole proprietorship, partnership or corporation (federal or provincial).'], ['Register your business', 'Register with your province or territory, or incorporate federally through Corporations Canada.'], ['Get a Business Number (BN) from the CRA', 'Needed for tax accounts such as GST/HST and payroll.'], ['Register for GST/HST', 'Required once taxable sales pass $30,000 in four consecutive quarters (the small supplier limit).'], ['Licences and permits', 'Use BizPaL to find federal, provincial and municipal permits for your business and location.']],
+      docs: ['Provincial registration or articles of incorporation', 'CRA Business Number', 'GST/HST account', 'Municipal licences'],
+      agencies: [['Canada Business: start your business', 'https://www.canada.ca/en/services/business/start.html', 'Official guide'], ['BizPaL permits and licences', 'https://bizpal-perle.ca/', 'Find permits by location']],
+      sources: [['Canada.ca: start a business', 'https://www.canada.ca/en/services/business/start.html']],
+    },
+  };
+  const COUNTRIES = { AG: 'Antigua and Barbuda', BS: 'Bahamas', BZ: 'Belize', DM: 'Dominica', GD: 'Grenada', GY: 'Guyana', KN: 'Saint Kitts and Nevis', LC: 'Saint Lucia', VC: 'Saint Vincent and the Grenadines', SR: 'Suriname', AU: 'Australia', NG: 'Nigeria', GH: 'Ghana', KE: 'Kenya', ZA: 'South Africa', IN: 'India', IE: 'Ireland', NZ: 'New Zealand', PH: 'Philippines', DE: 'Germany', FR: 'France', ES: 'Spain', BR: 'Brazil', MX: 'Mexico' };
+  const TZ_COUNTRY = { 'America/Barbados': 'BB', 'America/Jamaica': 'JM', 'America/Port_of_Spain': 'TT', 'Europe/London': 'GB', 'America/Toronto': 'CA', 'America/Vancouver': 'CA', 'America/Antigua': 'AG', 'America/Nassau': 'BS', 'America/Belize': 'BZ', 'America/Dominica': 'DM', 'America/Grenada': 'GD', 'America/Guyana': 'GY', 'America/St_Kitts': 'KN', 'America/St_Lucia': 'LC', 'America/St_Vincent': 'VC', 'America/Paramaribo': 'SR', 'Africa/Lagos': 'NG', 'Africa/Accra': 'GH', 'Africa/Nairobi': 'KE', 'Africa/Johannesburg': 'ZA', 'Asia/Kolkata': 'IN', 'Europe/Dublin': 'IE', 'Australia/Sydney': 'AU', 'Pacific/Auckland': 'NZ', 'Asia/Manila': 'PH', 'Europe/Berlin': 'DE', 'Europe/Paris': 'FR', 'Europe/Madrid': 'ES', 'America/Sao_Paulo': 'BR', 'America/Mexico_City': 'MX' };
+  const GENERIC = [['Choose a legal structure', 'Sole trader, partnership or limited company. A company usually protects your personal assets.'], ['Register the business name or company', 'With the national companies or business registry.'], ['Get a tax number', 'From the national revenue or tax authority.'], ['Register for sales tax or VAT when required', 'Check the turnover threshold that applies.'], ['Register as an employer', 'Social security, pension and payroll tax registrations before you hire.'], ['Licences, permits and premises', 'Trade licences, health and safety, planning or zoning approval.'], ['Bank account and insurance', 'Open a separate business account; get liability and property insurance.'], ['Protect your brand and data', 'Register trademarks; follow data protection law.']];
+
+  const LEARN = {
+    books: [['The Lean Startup', 'Eric Ries', 'Build, measure, learn: test ideas cheaply before betting big.'], ['The Mom Test', 'Rob Fitzpatrick', 'How to talk to customers so they tell you the truth.'], ['The E-Myth Revisited', 'Michael E. Gerber', 'Why most small businesses don’t work, and how to build systems.'], ['Profit First', 'Mike Michalowicz', 'A simple cash system that keeps you profitable from day one.'], ['Zero to One', 'Peter Thiel', 'Building something new instead of copying.'], ['Shoe Dog', 'Phil Knight', 'The honest, messy story of starting Nike.'], ['$100M Offers', 'Alex Hormozi', 'Making an offer so good people feel foolish saying no.'], ['The Hard Thing About Hard Things', 'Ben Horowitz', 'Leadership when there are no easy answers.'], ['Good to Great', 'Jim Collins', 'What separates lasting companies from the rest.'], ['Built to Sell', 'John Warrillow', 'Making a business that runs without you.']],
+    videos: [['Y Combinator', 'https://www.youtube.com/@ycombinator', 'Startup School talks from founders and partners'], ['How great leaders inspire action', 'https://www.youtube.com/results?search_query=Simon+Sinek+How+great+leaders+inspire+action+TED', 'Simon Sinek’s famous "Start with why" TED talk'], ['Alex Hormozi', 'https://www.youtube.com/@AlexHormozi', 'Offers, pricing and sales for small businesses'], ['Harvard Business Review', 'https://www.youtube.com/results?search_query=Harvard+Business+Review+entrepreneurship', 'Strategy and management explainers'], ['How to Start a Startup (Stanford)', 'https://www.youtube.com/results?search_query=How+to+Start+a+Startup+Stanford+CS183B', 'Free 20-lecture course with Y Combinator'], ['Caribbean entrepreneurship', 'https://www.youtube.com/results?search_query=Caribbean+entrepreneur+success+story', 'Stories from founders in the region']],
+    mags: [['Harvard Business Review', 'https://hbr.org/', 'Management and strategy research, readable'], ['Inc.', 'https://www.inc.com/', 'Small and growing businesses'], ['Entrepreneur', 'https://www.entrepreneur.com/', 'Practical how-to for founders'], ['Fast Company', 'https://www.fastcompany.com/', 'Innovation, design and leadership'], ['The Economist', 'https://www.economist.com/', 'World economy and markets'], ['Bloomberg Businessweek', 'https://www.bloomberg.com/businessweek', 'Business news and features'], ['Business Barbados', 'https://businessbarbados.com/', 'Barbados business and investment']],
+  };
+
+  /* =================================================================
+     STATE
+     ================================================================= */
+  const S = Object.assign({ ideas: [], concept: null, answers: {}, feedback: {}, cur: 0, country: null, ccSource: '', voice: { gender: 'female', name: '', rate: 1 }, ai: 'auto', ollama: { url: 'http://localhost:11434', model: 'llama3.2' } }, store.get('state', {}));
+  const save = () => store.set('state', S);
+
+  /* =================================================================
+     VOICE OUT (text to speech): browser voices, or the phone app's native engine
+     ================================================================= */
+  const FEMALE = /female|woman|samantha|victoria|karen|moira|tessa|fiona|zira|hazel|susan|serena|allison|ava|joanna|salli|kimberly|libby|sonia|aria|jenny|michelle|emma|olivia|amy|catherine|google uk english female|google us english/i;
+  const MALE = /\bmale\b|\bman\b|daniel|alex|fred|david|mark|george|james|ryan|guy|tom|oliver|arthur|aaron|rishi|thomas|matthew|joey|brian|google uk english male/i;
+  let voices = [];
+  function loadVoices() {
+    if (!('speechSynthesis' in window)) return;
+    voices = speechSynthesis.getVoices().filter((v) => /^en/i.test(v.lang));
+    renderVoiceSelect();
+  }
+  function pickVoice(gender) {
+    if (S.voice.name) { const v = voices.find((x) => x.name === S.voice.name); if (v) return v; }
+    const re = gender === 'male' ? MALE : FEMALE;
+    const pref = voices.filter((v) => re.test(v.name) && !(gender === 'male' ? FEMALE : MALE).test(v.name));
+    return pref.find((v) => /en-(GB|US)/i.test(v.lang)) || pref[0] || voices[0] || null;
+  }
+  function speak(text, label) {
+    if (S.voice.gender === 'off') { toast('Voice is off. Turn it on in Settings.'); return; }
+    stopSpeak();
+    const clean = String(text).replace(/[*_#>`]/g, '');
+    if (window.NativeShim && window.NativeShim.speak && window.NativeShim.native) {
+      $('speaking').hidden = false; $('speakingTxt').textContent = label || 'Mentor is speaking';
+      window.NativeShim.speak(clean, { gender: S.voice.gender, rate: S.voice.rate }).finally(() => { $('speaking').hidden = true; });
+      return;
+    }
+    if (!('speechSynthesis' in window)) { toast('This device has no built-in voice. Read the text instead.'); return; }
+    const u = new SpeechSynthesisUtterance(clean), v = pickVoice(S.voice.gender);
+    if (v) { u.voice = v; u.lang = v.lang; }
+    u.rate = S.voice.rate; u.pitch = S.voice.gender === 'male' && v && !MALE.test(v.name) ? 0.8 : 1;
+    u.onend = u.onerror = () => { $('speaking').hidden = true; };
+    $('speaking').hidden = false; $('speakingTxt').textContent = label || 'Mentor is speaking';
+    speechSynthesis.speak(u);
+  }
+  function stopSpeak() {
+    try { if ('speechSynthesis' in window) speechSynthesis.cancel(); } catch (e) { /* ignore */ }
+    try { if (window.NativeShim && window.NativeShim.stopSpeaking) window.NativeShim.stopSpeaking(); } catch (e) { /* ignore */ }
+    $('speaking').hidden = true;
+  }
+  $('stopSpeak').onclick = stopSpeak;
+  if ('speechSynthesis' in window) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+
+  /* =================================================================
+     VOICE IN (speech recognition), with a typing fallback
+     ================================================================= */
+  // Desktop app builds (Electron) lack the online speech service, so they use the system's dictation instead.
+  const SR = window.appNative ? null : (window.SpeechRecognition || window.webkitSpeechRecognition);
+  const DICTATE_TIP = (() => {
+    const ua = navigator.userAgent;
+    if (/Android|iPhone|iPad/i.test(ua)) return 'Tip: tap the microphone on your phone keyboard to speak into the box.';
+    if (/Mac/i.test(ua)) return 'Tip: press the Fn (globe) key twice to dictate into the box.';
+    if (/Windows/i.test(ua)) return 'Tip: press Windows key + H to dictate into the box.';
+    return 'Tip: use your keyboard’s voice typing to speak into the box.';
+  })();
+  let rec = null, recBtn = null;
+  function wireMic(btn, area, hintEl) {
+    hintEl.textContent = SR ? 'Tap the green microphone and speak. Tap it again to stop.' : DICTATE_TIP;
+    btn.onclick = () => {
+      if (rec && recBtn === btn) { rec.stop(); return; }
+      if (!SR) { area.focus(); toast(DICTATE_TIP); return; }
+      try { if (rec) rec.abort(); } catch (e) { /* ignore */ }
+      rec = new SR(); recBtn = btn;
+      rec.lang = navigator.language || 'en-US'; rec.continuous = true; rec.interimResults = true;
+      const base = area.value ? area.value.replace(/\s*$/, ' ') : '';
+      let finalText = '';
+      rec.onresult = (e) => {
+        let interim = '';
+        for (let i = e.resultIndex; i < e.results.length; i++) { const r = e.results[i]; if (r.isFinal) finalText += r[0].transcript.trim() + ' '; else interim += r[0].transcript; }
+        area.value = base + finalText + interim;
+      };
+      rec.onerror = (e) => { hintEl.textContent = e.error === 'not-allowed' || e.error === 'service-not-allowed' ? 'The microphone is blocked here. ' + DICTATE_TIP : 'Voice stopped (' + e.error + '). Tap the microphone to try again.'; };
+      rec.onend = () => { btn.classList.remove('on'); btn.setAttribute('aria-label', 'Start speaking'); rec = null; recBtn = null; area.dispatchEvent(new Event('input')); };
+      try { rec.start(); btn.classList.add('on'); btn.setAttribute('aria-label', 'Stop speaking'); hintEl.textContent = 'Listening… speak naturally. Tap the red button to stop.'; }
+      catch (e) { hintEl.textContent = DICTATE_TIP; }
+    };
+  }
+
+  /* =================================================================
+     THE MENTOR'S BRAIN: Claude (inside Claude), Ollama (local, free), or the built-in coach
+     ================================================================= */
+  let samplePromise = null;
+  const getSample = () => (samplePromise ||= (window.claude && window.claude.use ? window.claude.use('sample').catch(() => null) : Promise.resolve(null)));
+  async function ollamaJson(prompt) {
+    const base = S.ollama.url.replace(/\/+$/, '');
+    const r = await fetch(base + '/api/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model: S.ollama.model, prompt, stream: false, format: 'json' }) });
+    if (!r.ok) throw new Error('Ollama answered ' + r.status);
+    const j = await r.json(); return JSON.parse(j.response);
+  }
+  /** Returns {data, by} or throws. by = 'Claude' | 'Ollama'. */
+  async function think(prompt) {
+    if (S.ai === 'builtin') throw Object.assign(new Error('builtin'), { builtin: true });
+    if (S.ai !== 'ollama') {
+      const sample = await getSample();
+      if (sample) {
+        try { return { data: await sample.json(prompt, { cache: false }), by: 'Claude' }; }
+        catch (e) { if (e && e.code === 'not_granted') samplePromise = null; if (S.ai !== 'auto') throw e; }
+      }
+    }
+    if (S.ai === 'ollama' || S.ai === 'auto') {
+      try { return { data: await ollamaJson(prompt), by: 'Ollama (' + S.ollama.model + ')' }; }
+      catch (e) { if (S.ai === 'ollama') throw new Error('Ollama is not reachable at ' + S.ollama.url + '. Is it running?'); }
+    }
+    throw Object.assign(new Error('builtin'), { builtin: true });
+  }
+  const thinking = (msg) => `<div class="thinking"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span>${esc(msg)}</span></div>`;
+
+  /* ---------- built-in coach ---------- */
+  const RED = [[/\beveryone\b|\banybody\b|\ball people\b/i, 'Avoid "everyone". Name one specific kind of person.'], [/no competition|no competitors|nobody else/i, 'There is always competition, even if it is people doing nothing. Name what they use today.'], [/go viral|social media will/i, 'Hoping to go viral is not a plan. Name a channel and what a customer costs through it.'], [/figure it out|we.?ll see|not sure yet|don.?t know/i, 'You said you are not sure. That is honest; now write down how you will find out and by when.'], [/guarantee|can.?t fail|definitely will/i, 'Be careful with certainty. Show the evidence instead.']];
+  function builtinScrutiny(qi, answer) {
+    const q = Q[qi], a = answer.trim(), low = a.toLowerCase();
+    const words = a.split(/\s+/).filter(Boolean).length;
+    const hasNum = /\d/.test(a), hasMoney = /[$£€]|\bbds|\bbbd|\busd|\bdollars?\b|\bjmd|\bttd/i.test(a);
+    const hits = q.want.filter((w) => low.includes(w));
+    const strengths = [], gaps = [];
+    if (words >= 40) strengths.push('You gave a full answer, not a one-liner.'); else gaps.push('Go deeper: aim for at least four or five sentences with real detail.');
+    if (hits.length >= 2) strengths.push('You covered the key points: ' + hits.slice(0, 4).join(', ') + '.');
+    else gaps.push('Missing the core of this question. Mention things like: ' + q.want.slice(0, 5).join(', ') + '.');
+    if (['numbers', 'money', 'target', 'channel+cost'].includes(q.need)) { if (hasNum) strengths.push('You used real numbers.'); else gaps.push('Add numbers: prices, costs, counts or dates.'); }
+    if (q.need === 'money' && !hasMoney) gaps.push('Say how much money changed hands, even if it was a small deposit.');
+    if (q.need === 'three' && (a.match(/\b(1|2|3|first|second|third|one|two|three)\b/gi) || []).length < 3) gaps.push('List three separate risks, each with its own response.');
+    for (const [re, msg] of RED) if (re.test(a)) gaps.push(msg);
+    let score = 1 + Math.min(2, hits.length) + (words >= 40 ? 1 : 0) + ((hasNum || !['numbers', 'money', 'target', 'channel+cost'].includes(q.need)) ? 1 : 0) - (RED.some(([re]) => re.test(a)) ? 1 : 0);
+    score = Math.max(1, Math.min(5, score));
+    const follow = { problem: 'Who did you talk to this week, and what exact words did they use to describe the problem?', customer: 'Where does this person spend time online and offline, so you can reach them?', pay: 'Could you get three people to put down a small deposit this week?', competition: 'What would make someone switch from their current option to you today?', advantage: 'If a big company copied you tomorrow, why would customers still pick you?', unit: 'What is your margin after delivery, card fees and VAT?', startup: 'What could you cut from the opening budget and still open?', funding: 'What happens if the money arrives three months late?', pricing: 'Who would still buy at a 20% higher price, and why?', channels: 'Which single channel will you test first, and with what budget?', mvp: 'What is the date your first customer can pay you?', metric: 'Who will you tell this number to, so you stay honest?', risks: 'Which of these risks can you reduce this month?', legal: 'Which agency will you call first, and when?', suppliers: 'Who is your second supplier, and have you asked them for a quote?', team: 'Who could you ask for advice this week for free?', time: 'Which hours in your week are protected for the business?', failure: 'What early warning sign would tell you this is happening?', scale: 'What can you write down as a checklist now so others can do it later?', why: 'What will you have achieved in the first 12 months?' }[q.t];
+    return { score, strengths, gaps: gaps.slice(0, 4), followUp: follow, story: null };
+  }
+  function builtinConcept(ideas) {
+    const ans = (t) => (S.answers[Q.findIndex((q) => q.t === t)] || '').trim();
+    const c = { problem: [], customer: [], solution: [], value: [], channels: [], revenue: [], costs: [], metrics: [], unfair: [] };
+    const RULES = [
+      ['costs', /\bcosts?\b|rent|equipment|ingredients|packaging|wages|supplies/i],
+      ['revenue', /\bprice\b|sell for|sells? for|charge|\$|bds|per box|subscription|fee/i],
+      ['channels', /instagram|whatsapp|facebook|tiktok|online|market|referral|flyer|word of mouth|partner/i],
+      ['unfair', /\bi (have|know|cooked|worked|built)\b|experience|years|licen[cs]e|recipe|network|relationship/i],
+      ['metrics', /target|goal|per week|per month|customers a (day|week)/i],
+      ['solution', /\b(sell|offer|make|build|deliver|provide|open|start)\b/i],
+      ['problem', /problem|pain|wait|waste|hard|difficult|expensive|frustrat|no (good|healthy)|lack/i],
+      ['customer', /customer|people|workers|students|parents|tourists|clients|owners|staff/i],
+    ];
+    for (const { text } of ideas) {
+      const hit = RULES.filter(([, re]) => re.test(text)).map(([k]) => k);
+      const key = hit[0] || 'solution';
+      c[key].push(text);
+      if (key === 'problem' && hit.includes('customer')) c.customer.push(text);
+      if ((key === 'costs' || key === 'revenue') && hit.includes('revenue') && hit.includes('costs')) c[key === 'costs' ? 'revenue' : 'costs'].push(text);
+    }
+    for (const [box, t] of [['problem', 'problem'], ['customer', 'customer'], ['channels', 'channels'], ['revenue', 'pricing'], ['costs', 'unit'], ['metrics', 'metric'], ['unfair', 'advantage']]) { const a = ans(t); if (a) c[box].push(a); }
+    const canvas = {}; for (const k of Object.keys(c)) canvas[k] = c[k].join('\n');
+    // split "Office workers in Warrens wait 30 minutes for lunch" into who / what hurts
+    const src = c.problem[0] || c.customer[0] || '';
+    const m = src.match(/^(.*?)\s+(wait|waste|need|needs|have|has|struggle|spend|spends|want|wants|can.?t|cannot|pay|lose|find)\s+(.*)$/i);
+    const who = m ? m[1] : (c.customer[0] || '').replace(/[.!]+$/, '');
+    const pain = m ? (m[2] + ' ' + m[3]).replace(/[.!]+$/, '') : '';
+    const solSrc = c.solution[0] || (ideas.find((i) => /\b(sell|offer|make|build|deliver|provide|open|start)\b/i.test(i.text)) || {}).text || '';
+    if (solSrc && !canvas.solution) canvas.solution = solSrc;
+    const sol = (solSrc || '').replace(/^i (could|would|will|can|want to|plan to)\s+/i, '').replace(/[.!]+$/, '');
+    const alt = (ans('competition').split(/[.\n]/)[0] || '').trim();
+    const edge = (c.unfair[0] || '').replace(/^i\s+/i, 'I ').replace(/[.!]+$/, '');
+    const lower = (x) => (/^I\b/.test(x) ? x : x.charAt(0).toLowerCase() + x.slice(1));
+    const statement = `For ${who ? lower(who) : '[Find out: who exactly]'} who ${pain ? lower(pain) : '[Find out: what hurts]'}, this business will ${sol ? lower(sol) : '[Find out: what you sell]'}.${alt ? ' Unlike ' + lower(alt) + ',' : ' Unlike what they use today,'} it ${c.value[0] ? lower(c.value[0].replace(/[.!]+$/, '')) : edge ? 'is run by someone who knows the job: ' + lower(edge) : 'is [Find out: why it is better]'}.`;
+    for (const k of Object.keys(canvas)) if (!canvas[k]) canvas[k] = '';
+    if (!canvas.metrics) canvas.metrics = 'Find out: how many paying customers a week by day 90 means "keep going"?';
+    if (!canvas.value) canvas.value = 'Find out: in one line, why customers would pick you over today’s option.';
+    return {
+      statement, canvas,
+      next: ['Talk to 10 people who match your first customer this week; write down their exact words.', 'Write a one-page offer with a price and ask 3 people for a deposit.', 'List every opening cost and the months you can survive with no sales.', 'Register your business name and get your tax number (see Start locally).', 'Pick one marketing channel, set a small budget, and measure what each customer costs.'],
+      by: 'built-in coach',
+    };
+  }
+
+  /* =================================================================
+     BRAINSTORM VIEW
+     ================================================================= */
+  const CANVAS = [['problem', 'Problem', 'What hurts? Who feels it?'], ['customer', 'First customers', 'Who exactly, and where are they?'], ['solution', 'Solution', 'What you will sell'], ['value', 'Why it’s better', 'The promise in one line'], ['channels', 'How they find you', 'Your first channels'], ['revenue', 'Money in', 'Price and how you get paid'], ['costs', 'Money out', 'Main costs'], ['metrics', 'Numbers to watch', 'What tells you it works'], ['unfair', 'Your edge', 'What others can’t copy']];
+  const TAG_RULES = [['problem', /problem|pain|wait|hard|difficult|expensive|waste|frustrat|annoy/i], ['customer', /customer|people|workers|students|parents|tourists|clients|owners/i], ['money', /price|\$|cost|charge|profit|pay|budget|loan/i], ['channel', /instagram|whatsapp|facebook|tiktok|online|market|shop|referral|flyer/i], ['idea', /./]];
+  const tagOf = (t) => TAG_RULES.find(([, re]) => re.test(t))[0];
+  function renderIdeas() {
+    $('ideaList').innerHTML = S.ideas.length ? S.ideas.map((it, i) => `<div class="idea"><span class="tag">${esc(it.tag)}</span><p>${esc(it.text)}</p><button class="btn small" type="button" data-del="${i}" aria-label="Remove thought">✕</button></div>`).join('') : '<p class="hint">No thoughts yet. Say or type anything: the problem you see, who has it, what you would sell, what it costs.</p><button class="btn small" type="button" id="exampleIdeas">Try an example idea</button>';
+    document.querySelectorAll('[data-del]').forEach((b) => b.onclick = () => { S.ideas.splice(+b.dataset.del, 1); save(); renderIdeas(); });
+    $('shapeBtn').disabled = S.ideas.length < 1;
+    if ($('exampleIdeas')) $('exampleIdeas').onclick = () => {
+      ['Office workers in Warrens wait 30 to 40 minutes for lunch and most of it is fried food.', 'I could sell healthy lunch boxes that people pre-order on WhatsApp by 10am and I deliver at noon.', 'A box would sell for about BDS$25. Ingredients and packaging cost me around BDS$11.', 'I cooked for my church events for six years so I know how to make food for 100 people.', 'My first customers would be the staff at three office buildings near my home.'].forEach((t) => S.ideas.push({ text: t, tag: tagOf(t), at: Date.now(), example: true }));
+      save(); renderIdeas(); toast('Example loaded. Press Shape my idea.');
+    };
+  }
+  $('addIdea').onclick = () => {
+    const parts = $('ideaIn').value.split(/\n+/).map((s) => s.trim()).filter(Boolean);
+    if (!parts.length) { toast('Say or type a thought first'); return; }
+    for (const t of parts) S.ideas.push({ text: t, tag: tagOf(t), at: Date.now() });
+    $('ideaIn').value = ''; save(); renderIdeas(); toast(parts.length > 1 ? parts.length + ' thoughts added' : 'Thought added');
+  };
+  $('clearIdeas').onclick = () => { if (!S.ideas.length) return; S.ideas = []; S.concept = null; save(); renderIdeas(); renderConcept(); };
+  function renderConcept() {
+    const c = S.concept; $('conceptCard').hidden = !c; if (!c) return;
+    $('statement').textContent = c.statement || '';
+    $('canvas').innerHTML = CANVAS.map(([k, h, ph]) => `<div class="box"><h3>${h}</h3><div contenteditable="true" data-k="${k}" data-ph="${esc(ph)}">${esc((c.canvas || {})[k] || '')}</div></div>`).join('');
+    $('nextSteps').innerHTML = (c.next || []).map((s) => `<li>${esc(s)}</li>`).join('');
+    document.querySelectorAll('#canvas [data-k]').forEach((el) => el.addEventListener('input', () => { S.concept.canvas[el.dataset.k] = el.innerText.trim(); save(); }));
+  }
+  $('statement').addEventListener('input', () => { if (S.concept) { S.concept.statement = $('statement').innerText.trim(); save(); } });
+  $('shapeBtn').onclick = async () => {
+    const st = $('shapeStatus');
+    st.innerHTML = thinking('Your mentor is sorting your thoughts…'); $('shapeBtn').disabled = true;
+    const answered = Q.map((q, i) => (S.answers[i] ? `Q: ${q.q}\nA: ${S.answers[i]}` : '')).filter(Boolean).join('\n\n');
+    const prompt = `You are a practical small-business mentor. A would-be founder spoke or typed these raw thoughts about a business idea (spoken text may contain transcription errors):
+${S.ideas.map((i) => '- ' + i.text).join('\n')}
+${answered ? '\nThey also answered some hard questions:\n' + answered : ''}
+Turn this into a concrete, workable concept. Use their own facts; do not invent numbers, names or places they did not give. Where something is missing, write what they must find out, starting with "Find out:".
+Reply with only JSON:
+{"statement":"one sentence: For [customer] who [problem], [business] is a [what] that [benefit]. Unlike [alternative], it [difference].","canvas":{"problem":"","customer":"","solution":"","value":"","channels":"","revenue":"","costs":"","metrics":"","unfair":""},"next":["five specific actions for the next 30 days, each starting with a verb"]}`;
+    try {
+      const { data, by } = await think(prompt);
+      S.concept = { statement: String(data.statement || ''), canvas: Object.assign({}, data.canvas || {}), next: (data.next || []).slice(0, 5).map(String), by };
+      st.innerHTML = `<p class="hint">Shaped by ${esc(by)}. Edit anything below.</p>`;
+    } catch (e) {
+      S.concept = builtinConcept(S.ideas);
+      st.innerHTML = `<div class="note info">${e.builtin ? 'Shaped by the built-in coach' : esc(e.message) + ' Used the built-in coach instead'}. For deeper analysis, open this app inside Claude or connect Ollama in Settings.</div>`;
+    }
+    save(); renderConcept(); $('shapeBtn').disabled = false;
+    $('conceptCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+  $('listenConcept').onclick = () => { const c = S.concept; if (!c) return; speak(c.statement + '. Your next steps. ' + (c.next || []).map((s, i) => (i + 1) + '. ' + s).join(' '), 'Reading your concept'); };
+
+  /* =================================================================
+     QUESTIONS VIEW
+     ================================================================= */
+  function renderQnav() {
+    const answered = Object.keys(S.answers).filter((k) => (S.answers[k] || '').trim()).length;
+    const scored = Object.values(S.feedback).filter(Boolean);
+    const avg = scored.length ? scored.reduce((a, f) => a + f.score, 0) / scored.length : 0;
+    const ready = Math.round((answered / 20) * 50 + (avg / 5) * 50 * (scored.length / 20));
+    $('readyBar').style.width = ready + '%';
+    $('readyTxt').textContent = `${answered} of 20 answered · ${scored.length} reviewed${scored.length ? ' · average ' + avg.toFixed(1) + '/5' : ''}`;
+    $('qnav').innerHTML = Q.map((q, i) => `<button type="button" role="tab" aria-selected="${i === S.cur}" class="${(S.answers[i] || '').trim() ? 'ans' : ''} ${i === S.cur ? 'cur' : ''}" data-q="${i}" aria-label="Question ${i + 1}">${i + 1}</button>`).join('');
+    document.querySelectorAll('[data-q]').forEach((b) => b.onclick = () => { S.cur = +b.dataset.q; save(); renderQuestion(); });
+  }
+  function feedbackHtml(f) {
+    if (!f) return '';
+    const st = f.story;
+    return `<div class="fb">
+      <div class="row" style="justify-content:space-between"><b>Mentor’s verdict</b><div class="row"><span class="score" aria-label="Score ${f.score} of 5">${[1, 2, 3, 4, 5].map((n) => `<i class="${n <= f.score ? 'on' : ''}"></i>`).join('')}</span><span class="hint">${f.score}/5 · ${esc(f.by || '')}</span></div></div>
+      ${f.strengths && f.strengths.length ? `<div class="note ok"><b>What’s strong</b><ul>${f.strengths.map((s) => `<li>${esc(s)}</li>`).join('')}</ul></div>` : ''}
+      ${f.gaps && f.gaps.length ? `<div class="note warn"><b>What a banker or investor will push on</b><ul>${f.gaps.map((s) => `<li>${esc(s)}</li>`).join('')}</ul></div>` : ''}
+      ${f.followUp ? `<div class="note info"><b>Your follow-up question:</b> ${esc(f.followUp)}</div>` : ''}
+      ${st ? `<article class="story"><span class="k">${esc(st.k)}</span><h3>${esc(st.h)}</h3><p>${esc(st.s)}</p><button class="btn small" type="button" id="listenStory">Listen to this story</button></article>` : ''}
+      <div class="row"><button class="btn small" type="button" id="listenFb">Listen to the verdict</button></div>
+    </div>`;
+  }
+  function renderQuestion() {
+    renderQnav();
+    const i = S.cur, q = Q[i], f = S.feedback[i];
+    $('qcard').innerHTML = `
+      <div class="row" style="justify-content:space-between"><span class="qnum">Question ${i + 1} of 20</span><button class="btn small" type="button" id="readQ">Read it to me</button></div>
+      <div class="qtext">${esc(q.q)}</div>
+      <p class="why">${esc(q.why)}</p>
+      <div class="speakrow"><button class="btn mic" id="micQ" type="button" aria-label="Start speaking"><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg></button>
+        <div><label class="fl" for="ansIn">Your answer</label><textarea id="ansIn" rows="6" placeholder="Speak or type. Be specific: names, numbers, dates.">${esc(S.answers[i] || '')}</textarea><p class="hint" id="micHintQ"></p></div></div>
+      <div class="row"><button class="btn primary" type="button" id="scrutinize">Scrutinize my answer</button><button class="btn" type="button" id="prevQ" ${i === 0 ? 'disabled' : ''}>Back</button><button class="btn" type="button" id="nextQ">${i === 19 ? 'Finish' : 'Next question'}</button></div>
+      <div id="fbOut">${feedbackHtml(f)}</div>`;
+    wireMic($('micQ'), $('ansIn'), $('micHintQ'));
+    $('ansIn').addEventListener('input', (e) => { S.answers[i] = e.target.value; save(); renderQnav(); });
+    $('readQ').onclick = () => speak(q.q + ' ' + q.why, 'Reading the question');
+    $('prevQ').onclick = () => { S.cur = Math.max(0, i - 1); save(); renderQuestion(); };
+    $('nextQ').onclick = () => { if (i === 19) { location.hash = '#local'; return; } S.cur = i + 1; save(); renderQuestion(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+    $('scrutinize').onclick = () => scrutinize(i);
+    bindFeedback(i);
+  }
+  function bindFeedback(i) {
+    const f = S.feedback[i]; if (!f) return;
+    if ($('listenStory')) $('listenStory').onclick = () => speak(f.story.h + '. ' + f.story.s, 'Telling a story');
+    if ($('listenFb')) $('listenFb').onclick = () => speak(`Score ${f.score} out of 5. ${(f.strengths || []).join(' ')} Now the hard part. ${(f.gaps || []).join(' ')} ${f.followUp ? 'Your follow-up question: ' + f.followUp : ''}`, 'Reading the verdict');
+  }
+  async function scrutinize(i) {
+    const a = (S.answers[i] || '').trim(), q = Q[i];
+    if (a.split(/\s+/).length < 3) { toast('Say or type an answer first'); return; }
+    $('fbOut').innerHTML = thinking('Your mentor is reading your answer…'); $('scrutinize').disabled = true;
+    const context = S.ideas.length ? 'Their idea, in their own words:\n' + S.ideas.slice(0, 12).map((x) => '- ' + x.text).join('\n') + '\n\n' : '';
+    const prompt = `You are a tough but kind small-business mentor reviewing a would-be founder's answer, like a bank loan officer or investor would. They may live in the Caribbean.
+${context}Question ${i + 1}: ${q.q}
+Their answer (may be voice-transcribed): """${a}"""
+Score it 1-5 for specificity, evidence and realism. Be concrete; quote their words when you push back. Then tell ONE true, well-documented story of a real entrepreneur or company (a success, a failure, or rags to riches) that teaches the lesson this answer most needs. Use only facts you are sure of; no invented quotes or numbers.
+Reply with only JSON:
+{"score":3,"strengths":["up to 3 short points"],"gaps":["up to 4 short, specific challenges"],"followUp":"one sharper question to answer next","story":{"k":"Success | Failure | Rags to riches | Pivot","h":"short title with the person or company","s":"the story in 80-120 words, ending with the lesson for them"}}`;
+    let f;
+    try {
+      const { data, by } = await think(prompt);
+      f = { score: Math.max(1, Math.min(5, Math.round(+data.score || 3))), strengths: (data.strengths || []).slice(0, 3).map(String), gaps: (data.gaps || []).slice(0, 4).map(String), followUp: String(data.followUp || ''), story: data.story && data.story.s ? { k: String(data.story.k || 'Story'), h: String(data.story.h || ''), s: String(data.story.s) } : storyFor(q.t), by };
+    } catch (e) {
+      f = builtinScrutiny(i, a); f.story = storyFor(q.t, S.feedback[i] && S.feedback[i].story ? [S.feedback[i].story.h] : []); f.by = 'built-in coach';
+    }
+    S.feedback[i] = f; save();
+    $('fbOut').innerHTML = feedbackHtml(f); bindFeedback(i); renderQnav(); $('scrutinize').disabled = false;
+    if (S.voice.gender !== 'off' && S.voice.autoplay) $('listenFb').click();
+  }
+
+  /* =================================================================
+     LOCAL VIEW
+     ================================================================= */
+  function countryList() {
+    const all = Object.assign({}, COUNTRIES); for (const [k, g] of Object.entries(GUIDES)) all[k] = g.name;
+    return Object.entries(all).sort((a, b) => a[1].localeCompare(b[1]));
+  }
+  $('countrySel').innerHTML = '<option value="">Choose your country</option>' + countryList().map(([k, n]) => `<option value="${k}">${esc(n)}${GUIDES[k] ? '' : ' (general guide)'}</option>`).join('');
+  async function detectCountry() {
+    if (S.country && S.ccSource === 'chosen') return;
+    try {
+      const r = await fetch('https://ipwho.is/?fields=success,country_code,country,city', { cache: 'no-store' });
+      const j = await r.json();
+      if (j.success && j.country_code) { setCountry(j.country_code, 'Found from your internet connection (IP address)' + (j.city ? ', near ' + j.city : '') + '.', 'ip'); return; }
+    } catch (e) { /* blocked or offline: fall through */ }
+    let tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (e) { /* ignore */ }
+    const cc = TZ_COUNTRY[tz];
+    if (cc) setCountry(cc, 'Guessed from your device’s time zone (' + tz + ') because the IP lookup is not available here. Change it if it’s wrong.', 'tz');
+    else $('locHint').textContent = 'Could not find your location. Choose your country above.';
+  }
+  function setCountry(cc, why, src) { S.country = cc; S.ccSource = src; save(); $('countrySel').value = cc; $('locHint').textContent = why; renderLocal(); }
+  $('countrySel').onchange = (e) => { if (e.target.value) setCountry(e.target.value, 'Chosen by you.', 'chosen'); };
+  function renderLocal() {
+    const cc = S.country, g = GUIDES[cc], name = g ? g.name : COUNTRIES[cc];
+    if (!cc) { $('localOut').innerHTML = ''; return; }
+    const steps = g ? g.steps : GENERIC;
+    $('localOut').innerHTML = `
+      <section class="card"><div class="row" style="justify-content:space-between"><h2>Steps to start in ${esc(name)}</h2><button class="btn small" id="listenLocal" type="button">Listen</button></div>
+        ${g ? `<p class="hint">Checked ${esc(g.checked)}. Rules and fees change: confirm with each agency before you file.</p>` : `<div class="note warn">This is a general checklist. ${esc(name)}’s exact agencies, fees and thresholds are not built in yet. ${''}<button class="btn small" id="aiLocal" type="button" style="margin-left:6px">Ask the mentor for ${esc(name)}</button></div><div id="aiLocalOut"></div>`}
+        <ol class="steps">${steps.map(([b, s]) => `<li><b>${esc(b)}</b><span>${esc(s)}</span></li>`).join('')}</ol></section>
+      ${g ? `<div class="grid2">
+        <section class="card"><h2>Documents to gather</h2><ul style="margin:0;padding-left:20px;display:grid;gap:4px">${g.docs.map((d) => `<li>${esc(d)}</li>`).join('')}</ul></section>
+        <section class="card"><h2>Who regulates you</h2><div class="tablewrap"><table class="facts"><tr><th>Agency</th><th>Handles</th></tr>${g.agencies.map(([n, u, w]) => `<tr><td><a href="${esc(u)}" target="_blank" rel="noopener">${esc(n)}</a></td><td>${esc(w)}</td></tr>`).join('')}</table></div></section>
+      </div>
+      <section class="card"><h3>Sources</h3><ul style="margin:0;padding-left:20px;display:grid;gap:4px;font-size:15px">${g.sources.map(([n, u]) => `<li><a href="${esc(u)}" target="_blank" rel="noopener">${esc(n)}</a></li>`).join('')}</ul></section>` : ''}
+      <p class="hint">This is guidance, not legal or tax advice. A local accountant or attorney can confirm what applies to your exact business.</p>`;
+    $('listenLocal').onclick = () => speak('Steps to start a business in ' + name + '. ' + steps.map(([b, s], i) => (i + 1) + '. ' + b + '. ' + s).join(' '), 'Reading local steps');
+    if ($('aiLocal')) $('aiLocal').onclick = async () => {
+      const out = $('aiLocalOut'); out.innerHTML = thinking('Asking the mentor…');
+      try {
+        const { data, by } = await think(`List the official steps to register and legally run a small business in ${name}, as of your latest knowledge. Name the real government agencies and their official websites. Do not guess fees or thresholds; say "check current fee" instead.
+Reply with only JSON: {"steps":[{"title":"","detail":"","agency":"","url":""}]}`);
+        out.innerHTML = `<div class="note info" style="margin-top:10px">From ${esc(by)}. AI answers can be out of date: confirm every step with the agency.</div><ol class="steps" style="margin-top:10px">${(data.steps || []).map((s) => `<li><b>${esc(s.title)}</b><span>${esc(s.detail)}${s.agency ? ' — ' + esc(s.agency) : ''}${/^https:\/\//.test(s.url || '') ? ` <a href="${esc(s.url)}" target="_blank" rel="noopener">website</a>` : ''}</span></li>`).join('')}</ol>`;
+      } catch (e) { out.innerHTML = `<div class="note info" style="margin-top:10px">The mentor’s AI is not available here. Search for "${esc(name)} business registration" on the government’s official website.</div>`; }
+    };
+  }
+
+  /* =================================================================
+     LEARN VIEW
+     ================================================================= */
+  function renderLearn() {
+    const book = (t, a) => 'https://www.google.com/search?tbm=bks&q=' + encodeURIComponent(t + ' ' + a);
+    $('learnOut').innerHTML = `
+      <section class="card"><h2>Recommended reading</h2><div class="lgrid">${LEARN.books.map(([t, a, d]) => `<a class="litem" href="${book(t, a)}" target="_blank" rel="noopener"><b>${esc(t)}</b><em>${esc(a)}</em><span>${esc(d)}</span></a>`).join('')}</div></section>
+      <section class="card"><h2>Watch on YouTube</h2><div class="lgrid">${LEARN.videos.map(([t, u, d]) => `<a class="litem" href="${esc(u)}" target="_blank" rel="noopener"><b>${esc(t)}</b><span>${esc(d)}</span></a>`).join('')}</div></section>
+      <section class="card"><h2>Magazine subscriptions</h2><div class="lgrid">${LEARN.mags.map(([t, u, d]) => `<a class="litem" href="${esc(u)}" target="_blank" rel="noopener"><b>${esc(t)}</b><span>${esc(d)}</span></a>`).join('')}</div><p class="hint">Most offer a few free articles a month. Libraries often lend digital copies free.</p></section>`;
+  }
+
+  /* =================================================================
+     SETTINGS
+     ================================================================= */
+  function renderVoiceSelect() {
+    const sel = $('voiceSel'); if (!sel) return;
+    const list = voices.length ? voices : [];
+    sel.innerHTML = '<option value="">Best match for the chosen voice</option>' + list.map((v) => `<option value="${esc(v.name)}" ${v.name === S.voice.name ? 'selected' : ''}>${esc(v.name)} (${esc(v.lang)})</option>`).join('');
+    const native = window.NativeShim && window.NativeShim.native;
+    $('voiceHint').textContent = native ? 'Your phone’s built-in voices are used.' : list.length ? list.length + ' English voices on this device. Voice names come from your device; choose one you like.' : 'This device has no built-in English voices, so read-aloud is not available here.';
+  }
+  function renderSettings() {
+    document.querySelectorAll('input[name=gender]').forEach((r) => { r.checked = r.value === S.voice.gender; });
+    document.querySelectorAll('input[name=ai]').forEach((r) => { r.checked = r.value === S.ai; });
+    $('rateIn').value = S.voice.rate; $('rateEcho').textContent = '(' + (+S.voice.rate).toFixed(2) + '×)';
+    $('ollamaUrl').value = S.ollama.url; $('ollamaModel').value = S.ollama.model;
+    $('ollamaBox').hidden = S.ai !== 'ollama';
+    getSample().then((s) => {
+      $('aiInfo').innerHTML = `<p class="hint"><b>Automatic</b> uses ${s ? 'Claude (available here, free on your Claude plan)' : 'Ollama if it is running on this computer'}, then falls back to the <b>built-in coach</b>, which works offline with rules and a library of true stories.</p>`;
+    });
+    renderVoiceSelect();
+  }
+  document.querySelectorAll('input[name=gender]').forEach((r) => r.onchange = () => { S.voice.gender = r.value; S.voice.name = ''; save(); renderVoiceSelect(); });
+  document.querySelectorAll('input[name=ai]').forEach((r) => r.onchange = () => { S.ai = r.value; save(); renderSettings(); });
+  $('voiceSel').onchange = (e) => { S.voice.name = e.target.value; save(); };
+  $('rateIn').oninput = (e) => { S.voice.rate = +e.target.value; $('rateEcho').textContent = '(' + S.voice.rate.toFixed(2) + '×)'; save(); };
+  $('ollamaUrl').onchange = (e) => { S.ollama.url = e.target.value.trim(); save(); };
+  $('ollamaModel').onchange = (e) => { S.ollama.model = e.target.value.trim(); save(); };
+  $('testVoice').onclick = () => speak('Hello. I am your business mentor. Tell me your idea, and I will help you turn it into a plan.', 'Testing the voice');
+  let wipeArm = false;
+  $('wipe').onclick = () => {
+    if (!wipeArm) { wipeArm = true; $('wipe').textContent = 'Tap again to erase everything'; setTimeout(() => { wipeArm = false; $('wipe').textContent = 'Erase everything'; }, 4000); return; }
+    try { localStorage.removeItem('mbm.state'); } catch (e) { /* ignore */ }
+    Object.assign(S, { ideas: [], concept: null, answers: {}, feedback: {}, cur: 0 }); save(); renderAll(); toast('Erased');
+  };
+
+  /* =================================================================
+     BUSINESS PACK EXPORT
+     ================================================================= */
+  let dlPromise = null;
+  const getDownloads = () => (dlPromise ||= (window.claude && window.claude.use ? window.claude.use('downloads').catch(() => null) : Promise.resolve(null)));
+  async function offerFile(name, text) {
+    const blob = new Blob([text], { type: 'text/markdown' });
+    if (window.NativeShim && window.NativeShim.native && window.NativeShim.saveFile) { try { await window.NativeShim.saveFile(name, blob); return; } catch (e) { /* fall through */ } }
+    const dl = await getDownloads();
+    if (dl) { try { await dl.save({ filename: name, data: blob }); toast('Saved'); } catch (e) { if (e && e.code !== 'declined') toast('Saving is not available here'); } return; }
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 3000);
+  }
+  $('savePack').onclick = () => {
+    const c = S.concept, g = GUIDES[S.country], L = [];
+    L.push('# My business pack', '', '_Made with My BUSINESS Mentor on ' + new Date().toLocaleDateString() + '_', '');
+    if (c) { L.push('## Concept', '', '> ' + c.statement, '', '| Box | Notes |', '|---|---|'); for (const [k, h] of CANVAS) L.push(`| ${h} | ${String((c.canvas || {})[k] || '').replace(/\n/g, '<br>').replace(/\|/g, '/')} |`); L.push('', '### Next five steps', ...(c.next || []).map((s, i) => `${i + 1}. ${s}`), ''); }
+    L.push('## Raw thoughts', ...S.ideas.map((i) => '- ' + i.text), '', '## The 20 hard questions', '');
+    Q.forEach((q, i) => { L.push(`### ${i + 1}. ${q.q}`, '', S.answers[i] ? S.answers[i] : '_Not answered yet._', ''); const f = S.feedback[i]; if (f) { L.push(`**Score:** ${f.score}/5`); if (f.gaps && f.gaps.length) L.push('**To work on:** ' + f.gaps.join(' ')); if (f.followUp) L.push('**Follow-up:** ' + f.followUp); if (f.story) L.push('', `> **${f.story.h}.** ${f.story.s}`); L.push(''); } });
+    if (S.country) { const steps = g ? g.steps : GENERIC; L.push('## Starting in ' + (g ? g.name : COUNTRIES[S.country]), ...steps.map(([b, s], i) => `${i + 1}. **${b}.** ${s}`), ''); if (g) L.push('Agencies: ' + g.agencies.map(([n, u]) => `[${n}](${u})`).join(', '), ''); }
+    L.push('## Reading list', ...LEARN.books.map(([t, a]) => `- ${t}, ${a}`), '');
+    offerFile('my-business-pack.md', L.join('\n'));
+  };
+
+  /* =================================================================
+     ROUTING
+     ================================================================= */
+  const TABS = ['ideas', 'questions', 'local', 'learn', 'voice'];
+  function route() {
+    const v = TABS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'ideas';
+    document.querySelectorAll('[data-view]').forEach((s) => { s.hidden = s.dataset.view !== v; });
+    document.querySelectorAll('[data-tab]').forEach((a) => a.setAttribute('aria-current', a.dataset.tab === v ? 'page' : 'false'));
+    if (v === 'questions') renderQuestion();
+    if (v === 'local') { if (!S.country || S.ccSource !== 'chosen') detectCountry(); else { $('countrySel').value = S.country; renderLocal(); } }
+    if (v === 'voice') renderSettings();
+  }
+  function renderAll() { renderIdeas(); renderConcept(); renderLearn(); route(); }
+  window.addEventListener('hashchange', route);
+  wireMic($('micIdea'), $('ideaIn'), $('micHintIdea'));
+  renderAll();
+  window.Mentor = { S, Q, STORIES, GUIDES, builtinScrutiny, builtinConcept, think };
+})();
+</script>
+
+</body>
+</html>

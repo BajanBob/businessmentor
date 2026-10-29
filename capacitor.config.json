@@ -1,0 +1,15 @@
+{
+  "appId": "com.bajanbob.businessmentor",
+  "appName": "My BUSINESS Mentor",
+  "webDir": "www",
+  "backgroundColor": "#f3f5f4",
+  "plugins": {
+    "SplashScreen": {
+      "backgroundColor": "#f3f5f4",
+      "launchShowDuration": 500
+    },
+    "LocalNotifications": {
+      "iconColor": "#3cc4b5"
+    }
+  }
+}
